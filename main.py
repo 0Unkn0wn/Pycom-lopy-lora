@@ -56,7 +56,7 @@ while lora.has_joined():
     #temp=si.temperature()
     hum=si.humidity()
     press=mpp.pressure()
-    li=lt.light()
+    li=lt.lux()
     #temp with offset comment both lines and change the payload and temppack to go to the ones without the offset
     temp_with_offset = (si.temperature()+offset_value)
     temp_with_offset = (si.temperature()*offset_procentage)
@@ -67,7 +67,7 @@ while lora.has_joined():
     temppack = ustruct.pack('f',temp_with_offset)
     humpack = ustruct.pack('f',hum)
     presspack = ustruct.pack('f',press)
-    lippack = ustruct.pack('2f',*li)
+    lippack = ustruct.pack('f',li)
     #Making the final package.
     payloadpack = temppack+humpack+presspack+lippack
     #Sending the packet
