@@ -1,4 +1,4 @@
-
+\
 from network import LoRa
 import socket
 import time
@@ -41,13 +41,16 @@ while lora.has_joined():
     # print("Humidity Ambient for " + str(t_ambient) + " deg C is " + str(si.humid_ambient(t_ambient)) + "%RH")
     lt = LTR329ALS01(py)
     # print("Light (channel Blue lux, channel Red lux): " + str(lt.light()))
-    payload = '{"Temperature":'+str(si.temperature())+',"Humidity":'+str(si.humidity())+',"Pressure":'+str(mpp.pressure())+',"Light_index":'+str(lt.light())+'}'
-    print(payload)
     temp=si.temperature()
     hum=si.humidity()
     press=mpp.pressure()
     li=lt.light()
-    temppack = ustruct.pack('f',temp)
+    #temp with offset comment both lines and change the payload and temppack to go to the ones without the offset
+    temp_with_offset = (si.temperature()-7)
+    temp_with_offset = (si.temperature()*0.75)
+    payload = '{"Temperature":'+str(temp_with_offset)+',"Humidity":'+str(hum)+',"Pressure":'+str(press)+',"Light_index":'+str(li)+'}'
+    print(payload)
+    temppack = ustruct.pack('f',temp_with_offset)
     humpack = ustruct.pack('f',hum)
     presspack = ustruct.pack('f',press)
     lippack = ustruct.pack('2f',*li)
