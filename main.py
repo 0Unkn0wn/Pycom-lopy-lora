@@ -40,7 +40,9 @@ while not lora.has_joined():
 print('Joined')
 s = socket.socket(socket.AF_LORA, socket.SOCK_RAW)
 s.setsockopt(socket.SOL_LORA, socket.SO_DR, 5)
-s.setblocking(True)
+s.setblocking(False)
+pycom.rgbled(0x00FF00) #green
+time.sleep(4)
 
 ##
 # Looping so it sends the sensor readings.
@@ -48,7 +50,7 @@ s.setblocking(True)
 #
 
 while lora.has_joined():
-    pycom.rgbled(0x00FF00) #green
+    pycom.rgbled(0x000000)
     mpp = MPL3115A2(py,mode=PRESSURE) # Returns pressure in Pa. Mode may also be set to ALTITUDE, returning a value in meters.
     si = SI7006A20(py)#Temperature sensor.
     lt = LTR329ALS01(py)#Light sensor
