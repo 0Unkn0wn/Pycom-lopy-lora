@@ -28,6 +28,10 @@ lora = LoRa(mode=LoRa.LORAWAN, region=LoRa.EU868)
 app_eui = ubinascii.unhexlify(app_eui)
 app_key = ubinascii.unhexlify(app_key)
 lora.join(activation=LoRa.OTAA, auth=(app_eui, app_key), timeout=0)
+##
+# Looping until it connects to ttn.
+# Red until the loop is done green when it connects.
+#
 while not lora.has_joined():
     pycom.rgbled(0xFF0000) #red
     print('Not yet joined...')
@@ -37,24 +41,36 @@ print('Joined')
 s = socket.socket(socket.AF_LORA, socket.SOCK_RAW)
 s.setsockopt(socket.SOL_LORA, socket.SO_DR, 5)
 s.setblocking(True)
+
+##
+# Looping so it sends the sensor readings.
+# Green all the time while it is connected.
+#
+
 while lora.has_joined():
     pycom.rgbled(0x00FF00) #green
-    mpp = MPL3115A2(py,mode=PRESSURE) # Returns pressure in Pa. Mode may also be set to ALTITUDE, returning a value in meters
-    si = SI7006A20(py)
-    lt = LTR329ALS01(py)
-    # temp=si.temperature()
+    mpp = MPL3115A2(py,mode=PRESSURE) # Returns pressure in Pa. Mode may also be set to ALTITUDE, returning a value in meters.
+    si = SI7006A20(py)#Temperature sensor.
+    lt = LTR329ALS01(py)#Light sensor
+    #Default value of the sensor reading.
+    #temp=si.temperature()
     hum=si.humidity()
     press=mpp.pressure()
     li=lt.light()
     #temp with offset comment both lines and change the payload and temppack to go to the ones without the offset
     temp_with_offset = (si.temperature()+offset_value)
     temp_with_offset = (si.temperature()*offset_procentage)
+    #How the payload will look like in the ttn console
     payload = '{"Temperature":'+str(temp_with_offset)+',"Humidity":'+str(hum)+',"Pressure":'+str(press)+',"Light_index":'+str(li)+'}'
     print(payload)
+    #Packing the data into bytes so it is be sent in a package.
     temppack = ustruct.pack('f',temp_with_offset)
     humpack = ustruct.pack('f',hum)
     presspack = ustruct.pack('f',press)
     lippack = ustruct.pack('2f',*li)
+    #Making the final package.
     payloadpack = temppack+humpack+presspack+lippack
+    #Sending the packet
     s.send(payloadpack)
+    #Modify this to change how fast the data is sent.
     time.sleep(6)
