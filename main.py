@@ -12,7 +12,7 @@ from LTR329ALS01 import LTR329ALS01
 from MPL3115A2 import MPL3115A2,ALTITUDE,PRESSURE
 
 app_eui = '0000000000000000' # leave as default even in ttn
-app_key = 'EA83E838C98E5A3B61D416B57EE508D6' # change this to change the ttn app
+app_key = '4DB0377D6A9278786CE27B70688B2419' # change this to change the ttn app
 
 #offset values used to make the sensor print correct values
 offset_value = -7
@@ -40,7 +40,7 @@ while not lora.has_joined():
 print('Joined')
 s = socket.socket(socket.AF_LORA, socket.SOCK_RAW)
 s.setsockopt(socket.SOL_LORA, socket.SO_DR, 5)
-s.setblocking(False)
+s.setblocking(True)
 pycom.rgbled(0x00FF00) #green
 time.sleep(4)
 
