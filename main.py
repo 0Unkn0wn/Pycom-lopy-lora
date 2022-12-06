@@ -46,17 +46,14 @@ def construct_payload(si,mpp,li):
     #
 
     #Default value of the temperature sensor reading.
-    #temp=si.temperature()
-    hum=si.humidity()
+    temp=si.temperature()*TEMPERATURE_OFFSET_PROCENTAGE
+    hum=si.humidity()*HUMIDITY_OFFSET_PROCENTAGE
     press=mpp.pressure()
     li=lt.lux()
-    #temp with offset comment both lines and change the payload and temppack to go to the ones without the offset
-    temp_with_offset = (si.temperature()+OFFSET_VALUE)
-    temp_with_offset = (si.temperature()*OFFSET_PROCENTAGE)
     # DEBUG:
-    # return '{"Temperature":'+str(temp_with_offset)+',"Humidity":'+str(hum)+',"Pressure":'+str(press)+',"Light_index":'+str(li)+'}'
+    # return '{"Temperature":'+str(temp)+',"Humidity":'+str(hum)+',"Pressure":'+str(press)+',"Light_index":'+str(li)+'}'
     #Packing the data into bytes so it is be sent in a package.
-    temppack = ustruct.pack('f',temp_with_offset)
+    temppack = ustruct.pack('f',temp)
     humpack = ustruct.pack('f',hum)
     presspack = ustruct.pack('f',press)
     lippack = ustruct.pack('f',li)
@@ -69,9 +66,9 @@ APP_EUI = '0000000000000000' # leave as default even in ttn
 APP_KEY = '4DB0377D6A9278786CE27B70688B2419' # change this to change the ttn app
 
 #offset values used to make the sensor print correct values
-OFFSET_VALUE = -7
-OFFSET_PROCENTAGE = 0.75
-SEND_DELAY = 60
+HUMIDITY_OFFSET_PROCENTAGE = 0.59
+TEMPERATURE_OFFSET_PROCENTAGE = 0.75
+SEND_DELAY = 10
 
 
 #reboot settings
