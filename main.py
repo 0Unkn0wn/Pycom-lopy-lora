@@ -46,8 +46,8 @@ def construct_payload(si,mpp,li):
     #
 
     #Default value of the temperature sensor reading.
-    temp=si.temperature()*TEMPERATURE_OFFSET_PROCENTAGE
-    hum=si.humidity()*HUMIDITY_OFFSET_PROCENTAGE
+    temp=si.temperature()*TEMPERATURE_OFFSET_PERCENTAGE
+    hum=si.humidity()*HUMIDITY_OFFSET_PERCENTAGE
     press=mpp.pressure()
     li=lt.lux()
     # DEBUG:
@@ -66,9 +66,9 @@ APP_EUI = '0000000000000000' # leave as default even in ttn
 APP_KEY = '4DB0377D6A9278786CE27B70688B2419' # change this to change the ttn app
 
 #offset values used to make the sensor print correct values
-HUMIDITY_OFFSET_PROCENTAGE = 0.59
-TEMPERATURE_OFFSET_PROCENTAGE = 0.75
-SEND_DELAY = 10
+HUMIDITY_OFFSET_PERCENTAGE = 0.595
+TEMPERATURE_OFFSET_PERCENTAGE = 0.718
+SEND_DELAY = 60
 
 
 #reboot settings
