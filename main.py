@@ -12,6 +12,16 @@ from LTR329ALS01 import LTR329ALS01
 from MPL3115A2 import MPL3115A2,ALTITUDE,PRESSURE
 
 
+
+APP_EUI = '0000000000000000' # leave as default even in ttn
+APP_KEY = '4DB0377D6A9278786CE27B70688B2419' # change this to change the ttn app
+
+#offset values used to make the sensor print correct values
+HUMIDITY_OFFSET_PERCENTAGE = 0.595
+TEMPERATURE_OFFSET_PERCENTAGE = 0.718
+SEND_DELAY = 240
+
+
 def led_color(hex_color):
     ##    The function that sets the color of the led.
     #    @param hex color - The color the led will have but in hexadecimal
@@ -42,14 +52,15 @@ def construct_payload(si,mpp,li):
     #    @param si: The variable for the temperature and humidity sensor.
     #    @param mpp: The variable for the pressure sensor.
     #    @param li: The variable for the light sensor
-    #    @return: The function returns the constructed payload already in bit format ready to be sent to the TTN console.
+    #    @return: The function returns the constructed payload already in
+    #             bit format ready to be sent to the TTN console.
     #
 
     #Default value of the temperature sensor reading.
-    temp=si.temperature()*TEMPERATURE_OFFSET_PERCENTAGE
-    hum=si.humidity()*HUMIDITY_OFFSET_PERCENTAGE
-    press=mpp.pressure()
-    li=lt.lux()
+    temp = si.temperature() * TEMPERATURE_OFFSET_PERCENTAGE
+    hum = si.humidity() * HUMIDITY_OFFSET_PERCENTAGE
+    press = mpp.pressure()
+    li = lt.lux()
     # DEBUG:
     # return '{"Temperature":'+str(temp)+',"Humidity":'+str(hum)+',"Pressure":'+str(press)+',"Light_index":'+str(li)+'}'
     #Packing the data into bytes so it is be sent in a package.
@@ -58,17 +69,8 @@ def construct_payload(si,mpp,li):
     presspack = ustruct.pack('f',press)
     lippack = ustruct.pack('f',li)
     #Making the final package.
-    payloadpack = temppack+humpack+presspack+lippack
+    payloadpack = temppack + humpack + presspack + lippack
     return payloadpack
-
-
-APP_EUI = '0000000000000000' # leave as default even in ttn
-APP_KEY = '4DB0377D6A9278786CE27B70688B2419' # change this to change the ttn app
-
-#offset values used to make the sensor print correct values
-HUMIDITY_OFFSET_PERCENTAGE = 0.595
-TEMPERATURE_OFFSET_PERCENTAGE = 0.718
-SEND_DELAY = 60
 
 
 #reboot settings
@@ -96,9 +98,9 @@ time.sleep(4)
 
 ##
 # Looping so it sends the sensor readings.
-# Green all the time while it is connected.
+# Green when it is connected then off so it doesn't affect the lux calculations.
 #
-try:
+try:#everyting under a try except so if the i2c bus fails the machine resets.
     while lora.has_joined():
         led_color(0x000000)#Led off
         mpp = MPL3115A2(py,mode=PRESSURE) # Returns pressure in Pa
