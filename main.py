@@ -44,8 +44,8 @@ def make_lora_connection(app_eui,app_key):
 def print_payload(payloadpack):
     ##    The function that prints how the payload will look like in the console.
     #
-    payload_unpacked=ustruct.unpack("<4f",payloadpack)
-    print("Temperature,Humidity,Pressure,Light_index\n",payload_unpacked)
+    payload_unpacked=ustruct.unpack("ffiif",payloadpack)
+    print("Temperature,Humidity,Pressure,Light_index,Battery_voltage\n",payload_unpacked)
 
 def construct_payload(si,mpp,li):
     ##    The function that constructs the payload to be ready for sending.
@@ -57,19 +57,15 @@ def construct_payload(si,mpp,li):
     #
 
     #Default value of the temperature sensor reading.
-    temp = si.temperature() * TEMPERATURE_OFFSET_PERCENTAGE
-    hum = si.humidity() * HUMIDITY_OFFSET_PERCENTAGE
-    press = mpp.pressure()
-    li = lt.lux()
+    temp = round(si.temperature() * TEMPERATURE_OFFSET_PERCENTAGE,2)
+    hum = round(si.humidity() * HUMIDITY_OFFSET_PERCENTAGE,1)
+    press = int(round(mpp.pressure()/100)) # mbar conversion
+    li = int(round(lt.lux()))
+    volatage = round(py.read_battery_voltage(),2)
     # DEBUG:
     # return '{"Temperature":'+str(temp)+',"Humidity":'+str(hum)+',"Pressure":'+str(press)+',"Light_index":'+str(li)+'}'
     #Packing the data into bytes so it is be sent in a package.
-    temppack = ustruct.pack('f',temp)
-    humpack = ustruct.pack('f',hum)
-    presspack = ustruct.pack('f',press)
-    lippack = ustruct.pack('f',li)
-    #Making the final package.
-    payloadpack = temppack + humpack + presspack + lippack
+    payloadpack = ustruct.pack('ffiif',temp,hum,press,li,volatage)
     return payloadpack
 
 
